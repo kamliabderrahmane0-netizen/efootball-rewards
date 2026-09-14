@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KONAMI - Secure ID Verification & Coin Transfer</title>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .konami-navbar {
+            width: 100%;
+            background-color: #0b0f19;
+            border-bottom: 2px solid #e11d48;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .konami-logo {
+            color: #e11d48;
+            font-weight: 900;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+        .lang-select {
+            background-color: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #334155;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .efootball-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1e293b;
+            padding: 8px 20px;
+            width: 100%;
+            box-sizing: border-box;
+            border-bottom: 1px solid #334155;
+            color: #facc15;
+            font-weight: bold;
+        }
+        .main-wrapper {
+            width: 100%;
+            max-width: 550px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .charge-card {
+            background-color: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #38bdf8;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        input[type="text"]:focus, select:focus {
+            border-color: #38bdf8;
+            outline: none;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+            transition: opacity 0.2s;
+        }
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+        /* قسم شريط التقدم والتحميل الوهمي */
+        .loading-section {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 4px solid #334155;
+            border-top: 4px solid #f59e0b;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .success-box {
+            display: none;
+            background-color: #064e3b;
+            border: 1px solid #10b981;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ترويسة الموقع -->
+    <div class="konami-navbar">
+        <div class="konami-logo">KONAMI</div>
+        <select class="lang-select" id="langSwitch" onchange="changeLanguage()">
+            <option value="ar">العربية 🇸🇦</option>
+            <option value="en">English 🇬🇧</option>
+            <option value="fr">Français 🇫🇷</option>
+        </select>
+    </div>
+    
+    <div class="efootball-brand">
+        <span>⚽ eFOOTBALL™ Secure Gateway</span>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="charge-card">
+            
+            <!-- نموذج إدخال البيانات -->
+            <div id="formSection">
+                <div class="card-title" id="txt-card-title">ربط معرف الحساب وشحن المكافأة</div>
+                
+                <div class="form-group">
+                    <label id="txt-label-id">معرف المستخدم (Konami ID / User ID):</label>
+                    <input type="text" id="userId" placeholder="أدخل معرف الحساب هنا (مثال: 123456789)">
+                </div>
+
+                <div class="form-group">
+                    <label id="txt-label-platform">منصة اللعب (Platform):</label>
+                    <select id="platform">
+                        <option value="android">Android / iOS (Mobile)</option>
+                        <option value="playstation">PlayStation Network</option>
+                        <option value="xbox">Xbox Live</option>
+                        <option value="steam">Steam / PC</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label id="txt-label-reward">الحزمة المختارة:</label>
+                    <input type="text" value="1000 Coins + Messi & Lamine Yamal Pack" disabled style="background-color: #111827; color: #f59e0b; font-weight: bold;">
+                </div>
+
+                <button class="submit-btn" onclick="startProcess()" id="txt-btn">🔄 التحقق وبدء الشحن الفوري</button>
+            </div>
+
+            <!-- قسم التحميل والتقدم الوهمي -->
+            <div class="loading-section" id="loadingSection">
+                <div class="spinner"></div>
+                <h3 id="txt-loading" style="color: #f8fafc;">جاري الاتصال بخوادم كونامي ومزامنة الحساب...</h3>
+                <p id="txt-subloading" style="color: #94a3b8; font-size: 0.9rem;">يرجى عدم إغلاق الصفحة أثناء تحويل 1000 كوينز وحزمة اللاعبين.</p>
+            </div>
+
+            <!-- رسالة النجاح الوهمية النهائية -->
+            <div class="success-box" id="successBox">
+                <h2 style="color: #34d399; margin-top: 0;" id="txt-success-title">🎉 تم الشحن بنجاح!</h2>
+                <p id="txt-success-desc" style="color: #d1fae5; line-height: 1.6;">
+                    تمت معالجة طلبك وإضافة <b>1000 كوينز</b> مع حزمة <b>ميسي ولامين يمال</b> إلى حسابك بنجاح.<br>
+                    يرجى فتح لعبة eFootball لاستلام المكافأة من صندوق الهارد (Inbox).
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- كود الجافاسكريبت لمحاكاة عملية الشحن واللغات -->
+    <script>
+        const texts = {
+            ar: {
+                cardTitle: "ربط معرف الحساب وشحن المكافأة",
+                labelId: "معرف المستخدم (Konami ID / User ID):",
+                labelPlatform: "منصة اللعب (Platform):",
+                labelReward: "الحزمة المختارة:",
+                btn: "🔄 التحقق وبدء الشحن الفوري",
+                loading: "جاري الاتصال بخوادم كونامي ومزامنة الحساب...",
+                subloading: "يرجى عدم إغلاق الصفحة أثناء تحويل 1000 كوينز وحزمة اللاعبين.",
+                successTitle: "🎉 تم الشحن بنجاح!",
+                successDesc: "تمت معالجة طلبك وإضافة <b>1000 كوينز</b> مع حزمة <b>ميسي ولامين يمال</b> إلى حسابك بنجاح.<br>يرجى فتح لعبة eFootball لاستلام المكافأة من صندوق الهارد (Inbox).",
+                dir: "rtl"
+            },
+            en: {
+                cardTitle: "Link Account ID & Claim Reward",
+                labelId: "User ID (Konami ID):",
+                labelPlatform: "Game Platform:",
+                labelReward: "Selected Package:",
+                btn: "🔄 Verify & Start Instant Charge",
+                loading: "Connecting to Konami servers & syncing account...",
+                subloading: "Please do not close the page while transferring coins and player pack.",
+                successTitle: "🎉 Successfully Charged!",
+                successDesc: "Your request has been processed and <b>1000 Coins</b> + <b>Messi & Lamine Yamal</b> pack have been added to your account.<br>Please open eFootball to claim your reward from the Inbox.",
+                dir: "ltr"
+            },
+            fr: {
+                cardTitle: "Lier l'ID et Réclamer la Récompense",
+                labelId: "ID Utilisateur (Konami ID):",
+                labelPlatform: "Plateforme de jeu:",
+                labelReward: "Pack Sélectionné:",
+                btn: "🔄 Vérifier et Lancer la Recharge",
+                loading: "Connexion aux serveurs Konami et synchronisation...",
+                subloading: "Veuillez ne pas fermer la page pendant le transfert des pièces.",
+                successTitle: "🎉 Recharge Réussie !",
+                successDesc: "Votre demande a été traitée et <b>1000 Pièces</b> + le pack <b>Messi & Lamine Yamal</b> ont été ajoutés.<br>Veuillez ouvrir eFootball pour récupérer votre récompense.",
+                dir: "ltr"
+            }
+        };
+
+        function changeLanguage() {
+            const lang = document.getElementById('langSwitch').value;
+            const root = document.getElementById('html-root');
+            root.setAttribute('dir', texts[lang].dir);
+            
+            document.getElementById('txt-card-title').innerText = texts[lang].cardTitle;
+            document.getElementById('txt-label-id').innerText = texts[lang].labelId;
+            document.getElementById('txt-label-platform').innerText = texts[lang].labelPlatform;
+            document.getElementById('txt-label-reward').innerText = texts[lang].labelReward;
+            document.getElementById('txt-btn').innerText = texts[lang].btn;
+            document.getElementById('txt-loading').innerText = texts[lang].loading;
+            document.getElementById('txt-subloading').innerText = texts[lang].subloading;
+            document.getElementById('txt-success-title').innerText = texts[lang].successTitle;
+            document.getElementById('txt-success-desc').innerHTML = texts[lang].successDesc;
+        }
+
+        function startProcess() {
+            const userId = document.getElementById('userId').value;
+            if(!userId) {
+                alert("الرجاء إدخال معرف الحساب (Konami ID) أولاً!");
+                return;
+            }
+
+            // إخفاء نموذج الإدخال وإظهار شحن التحميل
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+
+            // محاكاة وقت المعالجة (مثلاً 4 ثوانٍ ثم إظهار نجاح العملية)
+            setTimeout(() => {
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('successBox').style.display = 'block';
+            }, 4000);
+        }
+    </script>
+
+</body>
+</html>
